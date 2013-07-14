@@ -7,7 +7,7 @@ class Node:
 	connectedTo (dictionary of edges)  -- keys: the name of the node pointed to by the edge
 									    values: the optional weight on the edge"""
 	def __init__(self, id):
-		self.id = id
+		self.id = id # Nonononononononon
 		self.connectedTo = {}
 
 	def _addConnection(self, to_id, weight=1):
@@ -23,7 +23,7 @@ class Node:
 		return self.connectedTo[target_node]
 
 	def _getConnections(self):
-		return self.connectedTo.keys()
+		return self.connectedTo.keys() ## I do not think this means what you think it means
 
 class Graph:
 	"""The graph structure itself.
@@ -33,19 +33,21 @@ class Graph:
 		numNodes: the number of nodes in the graph"""
 
 	def __init__(self):
-		self.nodeList = {}
+		self.nodeList = {} # Why are you calling a dict a list? Is it better to have a dict or a list?
 		self.numNodes = 0
 
 	def __contains__(self, node):
 		return node in self.nodeList
-	
+
 	def _addNode(self, id):
+		# User could create nodes with non-integer keys and break your assumptions
 		self.numNodes += 1
 		newNode = Node(id)
 		self.nodeList[id] = newNode
 		return newNode
 
 	def addEdge(self, from_id, to_id, weight=1):
+		# Unsafe - user could create nodes with non-integer keys and break your assumptions
 		if from_id not in self.nodeList:
 			newNode = self.addNode(from_id)
 		if to_id not in self.nodeList:
