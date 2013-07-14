@@ -13,52 +13,64 @@ class HashTable:
 		bucket = (ascii_val * 73) % self.numBuckets
 		return bucket
 
-	def add(self, key, value):
+	def _add(self, key, value):
 		"""Adds a value to the hash table."""
 		bucket = self._hash(key)
 		self.table[bucket].append((key, value))
 		self.size += 1
 
-	def val(self, key):
+	def _val(self, key):
 		"""Given a key, returns the associated value."""
+		if type(key) != str:
+			raise TypeError('Key must be a string.')
 		bucket = self._hash(key)
 		for entry in self.table[bucket]:
 			if entry[0] == key:
 				return entry[1]
-		print "Key-Value pair not found."
-		return None
+		raise KeyError('Key-Value pair not found.')
 
-	def assignVal(self, key, new_value):
+	def _assignVal(self, key, new_value):
+		"""Re-assigns the value of an existing key."""
+		if type(key) != str:
+			raise TypeError('Key must be a string.')
 		bucket = self._hash(key)
-		for entry in self.table[bucket]:
-			if entry[0] == key:
-				entry[1] = new_value
-				print "Key %s now assigned to value " + new_value
-		print "Key-Value pair not found."
+		thisBucket = self.table[bucket]
+		self.table[bucket] = [(key, new_value) for entry in thisBucket if entry[0] == key]
+		print "Key %s now assigned to value" % key, new_value
 
-	def assignVal_listComp(self, key, new_value):
-		bucket = self._hash(key)
-		[(key, new_value) for entry in self.table[bucket] if entry[0] == key]
-
+	def val(self, key, val=None):
+		"""Method-wrap for previous three helper-functions."""
+		if val == None:
+			return self._val(key)
+		else:
+			try:
+				curent_value = self._val(key)
+				self._assignVal(key, val)
+			except:
+				self._add(key, val)
 
 	def remove(self, key):
 		"""Deletes the key and its associated value from the dictionary."""
 		bucket = self._hash(key)
-		thisbucket = self.table[bucket]
-		[thisbucket.remove(entry) for entry in thisbucket if entry[0] == key]
+		thisBucket = self.table[bucket]
+		origLength = len(thisBucket)
+		[thisBucket.remove(entry) for entry in thisBucket if entry[0] == key]
+		if origLength != len(thisBucket):
+			self.size -= 1
+		else:
+			raise KeyError('Key-Value pair not found.')
 
-def testAssignFunc():
-	h = HashTable(10000)
-	for i in xrange(10000):
-		h.add(str(i), i)
-	start_time_1 = time.time()
-	for i in xrange(10000):
-		h.assignVal(str(i), -1)
-	timing_for = time.time() - start_time_1
-	start_time_2 = time.time()
-	for i in xrange(10000):
-		h.assignVal_listComp(str(i), 1)
-	timing_listComp = time.time() - start_time_2
-	print "Time for for loop: %f." % timing_for
-	print "Time for list comprehension: %f." % timing_listComp
-	return timing_for - timing_listComp
+def testHashTable():
+	h = HashTable(100)
+	h.add('a', 3)
+	h.add('b', 4)
+	h.add('c', 5)
+	h.add('cake', 42)
+	h.add('jeebusallmighty', 1)
+	assert h.size == 5
+	h.remove('a')
+	h.remove('b')
+	h.remove('c')
+	h.remove('cake')
+	h.remove('jeebusallmighty')
+	assert h.size == 0
