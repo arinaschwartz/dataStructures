@@ -13,6 +13,8 @@ class Heap:
 	def pop(self):
 		"""Removes the top entry in the heap (the entry with the minimum value)
 		   and reorders the heap."""
+
+		 # Should throw exception if list is empty
 		popped_value = self.heapArray[0]
 		new_root = self.heapArray.pop()
 		if self.getSize() == 0:
@@ -49,6 +51,8 @@ class Heap:
 
 
 	def _swap(self, heapEntry1, heapEntry2):
+		## This is extremely inefficient. Re-write without the call to List.index
+		## List.index is O(n) in the length of the list.
 		"""Swaps the position of two entries in the heap."""
 		first_index = self.heapArray.index(heapEntry1)
 		second_index = self.heapArray.index(heapEntry2)
@@ -58,6 +62,7 @@ class Heap:
 	def _parent(self, heapEntry):
 		"""Returns the parent of the given heap entry."""
 		index = self.heapArray.index(heapEntry)
+		## Best practices: Avoid multiple points of return
 		if index == 0:
 			return None
 		parent = self.heapArray[(index - 1)/2]
@@ -66,19 +71,25 @@ class Heap:
 	def _children(self, heapEntry):
 		"""Returns a list of the children of the given heapEntry.
 			List will contain None in entries with no child present."""
+		## Return a tuple not a list. Tuples more memory efficient, and immutable -
+		## both benefits for this use case
 		index = self.heapArray.index(heapEntry)
 		childIndex = (2*index) + 1
-		childList = []
+		childList = [] # Do not build up, introduces room for errors. Instead assign all at once.
+		## This is extremely inefficient. Just use arithmetic not data structures.
+		## This adds a needless O(n) factor to your code. Should be O(1)
 		allEntries = xrange(len(self.heapArray))
+		## Avoid multiple points of return
 		if childIndex not in allEntries:
-			childList = [None, None]
+			childList = [None, None] # Good (but use tuple instead)
 			return childList
 		childList.append(self.heapArray[childIndex])
 		if (childIndex + 1) not in allEntries:
-			childList.append(None)
+			childList.append(None) # Bad, very bad, needless confusion
 			return childList
 		childList.append(self.heapArray[childIndex + 1])
 		return childList
+		# Totally refactor this code to run in O(1) with a single return point
 
 
 def mkHeap(*arg):

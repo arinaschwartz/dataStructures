@@ -1,10 +1,12 @@
+#!/usr/bin/env python
 class Node:
 	"""node class for linked list. Takes an item to be stored and a pointer to the
 	   next node as optional arguments."""
 	def __init__(self, item = None, next = None, previous = None):
 		self.item = item
 		self.next = next
-		self.previous = previous
+		self.previous = previous ## Stylistic nit pick:
+		# say 'prev' so it will line up nice with 'next' :)
 
 class LinkedList:
 	"""Linked list implementation. First-in, first-out.
@@ -18,7 +20,7 @@ class LinkedList:
 		self.first = None
 		self.last  = None
 
-	def push(self, item = None):
+	def push(self, item = None): ## Remove item default, add insertion index
 		"""Pushes an item into the list containing the item given. O(1) scaling."""
 		newNode = Node(item, self.first)
 		if self.size == 0:
@@ -28,13 +30,16 @@ class LinkedList:
 			newNode.next.previous = newNode
 		self.size += 1
 
-	def pop(self):
+	def pop(self): ## Add index option (default to last?)
+		## idea / exercise: Have "Stack" and "Queue" classes that extend LinkedList with
+		## appropriate pop routines.
 		"""Pops the last item from the list. Returns the item popped. O(1) scaling."""
 		popped_item = self.last.item
 		if self.size == 1:
 			self.first = None
 			self.size -= 1
-			return popped_item
+			return popped_item ## General rule: Avoid multiple points of return unless
+			## really necessary
 		self.last = self.last.previous
 		self.last.next = None
 		self.size -= 1
@@ -70,3 +75,8 @@ def testList():
 	assert newList.pop()
 	assert newList.pop()
 	assert newList.getSize() == 0
+	assert newList.last == None
+	print "All tests passed"
+
+if __name__ == '__main__':
+	testList()
